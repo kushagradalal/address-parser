@@ -7,6 +7,7 @@ public class Address {
 	private String state;
 	private String stateCode;
 	private String zipCode;
+	private String poBox;
 
 	public String getStreet() {
 		return street;
@@ -48,10 +49,18 @@ public class Address {
 		this.zipCode = zipCode;
 	}
 
+	public String getPoBox() {
+		return poBox;
+	}
+
+	public void setPoBox(String poBox) {
+		this.poBox = poBox;
+	}
+
 	@Override
 	public String toString() {
 		return "Address [street=" + street + ", city=" + city + ", state=" + state + ", stateCode=" + stateCode
-				+ ", zipCode=" + zipCode + "]";
+				+ ", zipCode=" + zipCode + ", poBox=" + poBox + "]";
 	}
 
 }

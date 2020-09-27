@@ -9,12 +9,10 @@ import com.kushagra.addressparser.config.Config;
 public class AddressParserApplication {
 
 	public static void main(String[] args) {
-		//SpringApplication.run(AddressParserApplication.class, args);
-
+		// SpringApplication.run(AddressParserApplication.class, args);
 		var ctx = new AnnotationConfigApplicationContext(AddressParserApplication.class);
-		System.out.println(ctx.getBean(Config.class).getParserService().getAddress("Seals Construction, Inc. P O Box 66707 Visalia, CA 93290"));
-		
-
+		Config c = ctx.getBean(Config.class);
+		System.out.println(c.getParserService().getAddress(""));
 	}
 
 }

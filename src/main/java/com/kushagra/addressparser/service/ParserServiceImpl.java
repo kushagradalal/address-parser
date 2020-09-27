@@ -1,13 +1,15 @@
 package com.kushagra.addressparser.service;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import com.kushagra.addressparser.model.Address;
 import com.kushagra.addressparser.util.CSVUtil;
@@ -15,17 +17,20 @@ import com.kushagra.addressparser.util.CSVUtil;
 @Service
 public class ParserServiceImpl implements ParserService {
 
-	private Pattern patternZip = Pattern.compile("[0-9]{5}(?:-[0-9]{4})?$");
-	private Pattern patternStreet = Pattern.compile(
+	private static final Pattern PATTERN_ZIP = Pattern.compile("[0-9]{5}(?:-[0-9]{4})?$");
+	private static final Pattern PATTERN_STREET = Pattern.compile(
 			"\\d+[ ](?:[A-Za-z0-9.-]+[ ]?)+(?:Avenue|Lane|Road|Boulevard|Drive|Street|Ave|Dr|Rd|Blvd|Ln|St)\\.?");
-	private String boundary = "\\b";
+	private static final String BOUNDARY = "\\b";
+	private static final Pattern PATTERN_POBOX = Pattern
+			.compile("(?:Post(?:al)? (?:Office )?|P[. ]?O\\.? )?Box [0-9]+\\b");
+	private static final String PATTERN_NUMBER = "[^0-9]";
 
 	@Autowired
 	private CSVUtil csvUtil;
 
 	@Override
 	public String getStreet(String address) {
-		Matcher matcher = patternStreet.matcher(address);
+		Matcher matcher = PATTERN_STREET.matcher(address);
 		if (matcher.find()) {
 			return matcher.group();
 		}
@@ -39,28 +44,33 @@ public class ParserServiceImpl implements ParserService {
 		}
 		Map<String, Set<String>> stateCities = csvUtil.getStateCities();
 		Set<String> cities = stateCities.get(stateCode);
-		Optional<String> opt = cities.stream().filter(p -> {
-			Pattern pattern = Pattern.compile(boundary + p + boundary, Pattern.CASE_INSENSITIVE);
+		List<String> opt = cities.stream().filter(p -> {
+			Pattern pattern = Pattern.compile(BOUNDARY + p + BOUNDARY, Pattern.CASE_INSENSITIVE);
 			Matcher matcher = pattern.matcher(address);
 			return matcher.find();
-		}).findFirst();
-		return opt.isPresent() ? opt.get() : null;
+		}).collect(Collectors.toList());
+		return opt.isEmpty() ? null : opt.get(opt.size() - 1);
 	}
 
 	@Override
-	public String getState(String address) {
-		Set<String> stateShort = csvUtil.getStateShort();
-		Optional<String> opt = stateShort.stream().filter(p -> {
-			Pattern pattern = Pattern.compile(boundary + p + boundary, Pattern.CASE_INSENSITIVE);
+	public String getStateCode(String address) {
+		Map<String, String> states = csvUtil.getStates();
+		List<String> opt = states.keySet().stream().filter(p -> {
+			Pattern pattern = Pattern.compile(BOUNDARY + p + BOUNDARY, Pattern.CASE_INSENSITIVE);
 			Matcher matcher = pattern.matcher(address);
 			return matcher.find();
-		}).findFirst();
-		return opt.isPresent() ? opt.get() : null;
+		}).collect(Collectors.toList());
+		return opt.isEmpty() ? null : opt.get(opt.size() - 1);
+	}
+
+	@Override
+	public String getState(String stateCode) {
+		return csvUtil.getStates().get(stateCode);
 	}
 
 	@Override
 	public String getZipCode(String address) {
-		Matcher matcher = patternZip.matcher(address);
+		Matcher matcher = PATTERN_ZIP.matcher(address);
 		if (matcher.find()) {
 			return matcher.group();
 		}
@@ -68,13 +78,26 @@ public class ParserServiceImpl implements ParserService {
 	}
 
 	@Override
+	public String getPoBox(String address) {
+		Matcher matcher = PATTERN_POBOX.matcher(address);
+		if (matcher.find()) {
+			return matcher.group().replaceAll(PATTERN_NUMBER, "");
+		}
+		return null;
+	}
+
+	@Override
 	public Address getAddress(String address) {
-		Address addr = new Address();
-		addr.setStateCode(getState(address));
-		addr.setCity(getCity(address, addr.getStateCode()));
-		addr.setZipCode(getZipCode(address));
-		addr.setStreet(getStreet(address));
-		return addr;
+		Address obj = new Address();
+		if (StringUtils.isEmpty(address))
+			return obj;
+		obj.setStateCode(getStateCode(address));
+		obj.setState(getState(obj.getStateCode()));
+		obj.setCity(getCity(address, obj.getStateCode()));
+		obj.setZipCode(getZipCode(address));
+		obj.setStreet(getStreet(address));
+		obj.setPoBox(getPoBox(address));
+		return obj;
 	}
 
 }

@@ -10,8 +10,12 @@ public interface ParserService {
 
 	String getCity(String address, String stateCode);
 
-	String getState(String address);
+	String getStateCode(String address);
+
+	String getState(String stateCode);
 
 	String getZipCode(String address);
+
+	String getPoBox(String address);
 
 }
