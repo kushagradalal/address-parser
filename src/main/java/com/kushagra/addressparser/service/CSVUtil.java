@@ -1,4 +1,4 @@
-package com.kushagra.addressparser.util;
+package com.kushagra.addressparser.service;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,22 +12,22 @@ import java.util.Set;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.stereotype.Component;
-
 import com.kushagra.addressparser.model.InputCSV;
 
-@Component
-public class CSVUtil {
+class CSVUtil {
 
 	private static final String FILE_NAME = "/us_cities_states_counties.csv";
 	private List<InputCSV> csv = new ArrayList<>();
 	private Map<String, Set<String>> stateCities = new HashMap<>();
 	private Map<String, String> states = new HashMap<>();
 
-	@PostConstruct
-	private void init() {
+	private static CSVUtil csvUtil = null;
+
+	static {
+		getCSVUtil();
+	}
+
+	private CSVUtil() {
 		convertCSVToPOJO();
 		extractStates();
 		extractStateCities();
@@ -69,12 +69,19 @@ public class CSVUtil {
 				Collectors.mapping(InputCSV::getCityAlias, Collectors.toSet()))));
 	}
 
-	public Map<String, Set<String>> getStateCities() {
+	Map<String, Set<String>> getStateCities() {
 		return stateCities;
 	}
 
-	public Map<String, String> getStates() {
+	Map<String, String> getStates() {
 		return states;
+	}
+
+	public static CSVUtil getCSVUtil() {
+		if (csvUtil == null) {
+			csvUtil = new CSVUtil();
+		}
+		return csvUtil;
 	}
 
 }

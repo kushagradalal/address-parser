@@ -7,14 +7,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
-
 import com.kushagra.addressparser.model.Address;
-import com.kushagra.addressparser.util.CSVUtil;
 
-@Service
 public class ParserServiceImpl implements ParserService {
 
 	private static final Pattern PATTERN_ZIP = Pattern.compile("[0-9]{5}(?:-[0-9]{4})?$");
@@ -25,8 +19,7 @@ public class ParserServiceImpl implements ParserService {
 			.compile("(?:Post(?:al)? (?:Office )?|P[. ]?O\\.? )?Box [0-9]+\\b");
 	private static final String PATTERN_NUMBER = "[^0-9]";
 
-	@Autowired
-	private CSVUtil csvUtil;
+	private CSVUtil csvUtil = CSVUtil.getCSVUtil();
 
 	@Override
 	public String getStreet(String address) {
@@ -89,7 +82,7 @@ public class ParserServiceImpl implements ParserService {
 	@Override
 	public Address getAddress(String address) {
 		Address obj = new Address();
-		if (StringUtils.isEmpty(address))
+		if (address == null)
 			return obj;
 		obj.setStateCode(getStateCode(address));
 		obj.setState(getState(obj.getStateCode()));
