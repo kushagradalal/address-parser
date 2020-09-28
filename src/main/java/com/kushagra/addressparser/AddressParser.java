@@ -6,10 +6,9 @@ import com.kushagra.addressparser.service.ParserServiceImpl;
 
 public class AddressParser {
 
-	static ParserService parser;
+	private static ParserService parser = new ParserServiceImpl();
 
-	public static void main(String[] args) {
-		parser = new ParserServiceImpl();
+	private AddressParser() {
 	}
 
 	public static Address getAddress(String address) {
