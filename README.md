@@ -8,6 +8,8 @@ A utility to seperate different parts of an address string into its constituent 
 - Works offline.
 
 ## Usage
+- Run <b>JAR.bat</b> and look for <b>address-parser-1.0.jar</b> in target folder
+- Add <b>address-parser-1.0.jar</b> to your project classpath
 ```
 Address address = AddressParser.getAddress("your address string");
 ```

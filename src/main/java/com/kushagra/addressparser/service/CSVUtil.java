@@ -23,10 +23,6 @@ class CSVUtil {
 
 	private static CSVUtil csvUtil = null;
 
-	static {
-		getCSVUtil();
-	}
-
 	private CSVUtil() {
 		convertCSVToPOJO();
 		extractStates();
