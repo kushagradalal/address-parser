@@ -9,5 +9,5 @@ A utility to seperate different parts of an address string into its constituent 
 
 ## Usage
 ```
-AddressParser address = AddressParser.getAddress("your address string");
+Address address = AddressParser.getAddress("your address string");
 ```
