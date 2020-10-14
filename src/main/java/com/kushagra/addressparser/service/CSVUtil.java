@@ -21,7 +21,7 @@ class CSVUtil {
 	private Map<String, Set<String>> stateCities = new HashMap<>();
 	private Map<String, String> states = new HashMap<>();
 
-	private static CSVUtil csvUtil = null;
+	private static final CSVUtil INSTANCE = new CSVUtil();
 
 	private CSVUtil() {
 		convertCSVToPOJO();
@@ -73,11 +73,8 @@ class CSVUtil {
 		return states;
 	}
 
-	public static CSVUtil getCSVUtil() {
-		if (csvUtil == null) {
-			csvUtil = new CSVUtil();
-		}
-		return csvUtil;
+	public static CSVUtil getInstance() {
+		return INSTANCE;
 	}
 
 }

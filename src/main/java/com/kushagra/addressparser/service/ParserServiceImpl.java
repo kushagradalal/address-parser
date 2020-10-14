@@ -19,7 +19,7 @@ public class ParserServiceImpl implements ParserService {
 			.compile("(?:Post(?:al)? (?:Office )?|P[. ]?O\\.? )?Box [0-9]+\\b");
 	private static final String PATTERN_NUMBER = "[^0-9]";
 
-	private CSVUtil csvUtil = CSVUtil.getCSVUtil();
+	private CSVUtil csvUtil = CSVUtil.getInstance();
 
 	@Override
 	public String getStreet(String address) {
